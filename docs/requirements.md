@@ -42,8 +42,7 @@
 
 ## Constraints
 
-- No SNMP — stock AsusWRT firmware `3.0.0.4.388+` removed the SNMP tab; supported
-  traffic rates and byte totals are read from the router API
+- No SNMP — stock AsusWRT firmware `3.0.0.4.388+` removed the SNMP tab; supported traffic rates and byte totals are read from the router API
 - No firmware modification — works with stock firmware as shipped
 - No router-side configuration beyond enabling the admin HTTP/HTTPS interface
 - Uses the `asusrouter` library for router communication — no raw HTTP session management

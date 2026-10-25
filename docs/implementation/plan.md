@@ -16,8 +16,7 @@ Status: in progress
 
 ### Goal
 
-Build a working Prometheus exporter that connects to an ASUS router, collects the core
-metrics, and ships a multi-arch Docker image via GitHub Actions.
+Build a working Prometheus exporter that connects to an ASUS router, collects the core metrics, and ships a multi-arch Docker image via GitHub Actions.
 
 ### Deliverables
 
@@ -109,5 +108,4 @@ Status: planned
 
 ### Goal
 
-Document how to combine this exporter's time-series metrics with router syslog data
-(client connect/disconnect events, roaming events) for full observability.
+Document how to combine this exporter's time-series metrics with router syslog data (client connect/disconnect events, roaming events) for full observability.
