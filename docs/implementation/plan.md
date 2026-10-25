@@ -52,6 +52,8 @@ metrics, and ships a multi-arch Docker image via GitHub Actions.
 | `asus_sysinfo_memory_bytes{field}` | Gauge | Additional system memory values, in bytes |
 | `asus_sysinfo_swap_megabytes{slot}` | Gauge | Router-reported swap values by slot |
 | `asus_wifi_clients_by_band{band,state}` | Gauge | WiFi clients by band and association state |
+| `asus_wifi_radio_enabled{band}` | Gauge | WiFi radio enabled state by band |
+| `asus_wifi_channel{band}` | Gauge | Configured numeric WiFi channel by band |
 | `asus_aimesh_nodes{state}` | Gauge | Aggregate online/offline AiMesh node counts |
 | `asus_ports_total{type}` | Gauge | Physical port count by type |
 | `asus_ports_up{type}` | Gauge | Active physical links by port type |

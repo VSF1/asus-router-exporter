@@ -54,9 +54,10 @@ the latest result already held by the router; the exporter does not initiate tes
 The result timestamp is exported so consumers can distinguish a fresh result from an
 older one.
 DSL sync rates retain the raw numeric values from `asusrouter` because the library
-discards the original unit strings. The exporter deliberately does not scrape WLAN or
-guest-WLAN configuration or raw ping diagnostics: their responses may include sensitive
-settings or lack a stable normalized metric schema.
+discards the original unit strings. `AsusData.WLAN` provides per-band radio state and
+channel settings; the exporter exposes only enabled state and numeric channel values.
+It does not export SSIDs, passwords, or other sensitive wireless configuration. Raw
+ping diagnostics are not scraped because they lack a stable normalized metric schema.
 
 ### Async-native
 

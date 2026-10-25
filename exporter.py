@@ -71,6 +71,16 @@ wifi_clients_by_band = Gauge(
     "Wireless clients by band and association state",
     ["band", "state"],
 )
+wifi_radio_enabled = Gauge(
+    "asus_wifi_radio_enabled",
+    "1 if the WiFi radio is enabled, 0 if disabled",
+    ["band"],
+)
+wifi_channel = Gauge(
+    "asus_wifi_channel",
+    "Configured WiFi channel number",
+    ["band"],
+)
 aimesh_nodes = Gauge(
     "asus_aimesh_nodes",
     "AiMesh nodes by connectivity state",
@@ -130,6 +140,19 @@ def _number(value: object) -> float | None:
         result = float(value)
         if math.isfinite(result):
             return result
+    return None
+
+
+def _wifi_channel_number(value: object) -> float | None:
+    if isinstance(value, str):
+        try:
+            result = float(value.strip())
+        except ValueError:
+            return None
+    else:
+        result = _number(value)
+    if result is not None and result > 0 and result.is_integer():
+        return result
     return None
 
 
@@ -303,6 +326,24 @@ async def _scrape_sysinfo(router: AsusRouter) -> None:
             value = _number(data.get(f"load_avg{period}"))
         if value is not None:
             load_average.labels(period=f"{period}m").set(value)
+
+
+async def _scrape_wifi(router: AsusRouter) -> None:
+    data = await _get_optional_data(router, AsusData.WLAN)
+    if not isinstance(data, dict):
+        return
+
+    wifi_radio_enabled.clear()
+    wifi_channel.clear()
+    for band, settings in data.items():
+        if not isinstance(settings, dict):
+            continue
+        band_name = str(getattr(band, "value", band)).lower()
+        enabled = settings.get("radio")
+        if isinstance(enabled, bool):
+            wifi_radio_enabled.labels(band=band_name).set(int(enabled))
+        if (channel := _wifi_channel_number(settings.get("channel"))) is not None:
+            wifi_channel.labels(band=band_name).set(channel)
 
 
 async def _scrape_temperatures(router: AsusRouter) -> None:
@@ -533,6 +574,7 @@ async def scrape(router: AsusRouter) -> None:
             _scrape_ram(router),
             _scrape_wan(router),
             _scrape_sysinfo(router),
+            _scrape_wifi(router),
             _scrape_temperatures(router),
             _scrape_uptime(router),
             _scrape_aimesh(router),

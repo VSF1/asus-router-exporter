@@ -29,6 +29,8 @@ environment variables.
 | `asus_sysinfo_memory_bytes{field}` | Additional system memory values (buffers, cache, JFFS, etc.) |
 | `asus_sysinfo_swap_megabytes{slot}` | Router-reported swap values by slot |
 | `asus_wifi_clients_by_band{band,state}` | Wireless clients by band and associated/authenticated/authorized state |
+| `asus_wifi_radio_enabled{band}` | Whether each WiFi radio is enabled |
+| `asus_wifi_channel{band}` | Configured numeric WiFi channel |
 | `asus_aimesh_nodes{state}`                    | Aggregate online/offline AiMesh node counts |
 | `asus_ports_total{type}`                      | Physical port count by port type |
 | `asus_ports_up{type}`                         | Physical ports with an active link, by type |
@@ -51,12 +53,16 @@ speed-test, and DSL metrics are likewise optional and appear only when the route
 provides those categories. Speed-test values are the router's latest reported result;
 the exporter does not trigger a speed test. The DSL sync-rate metric preserves the unit
 used by the router/library because `asusrouter` does not expose a normalized unit.
-Unavailable optional measurements are omitted. System-information memory values are
-converted from decimal MB to bytes; NVRAM is already reported in bytes.
+WiFi radio and channel metrics use `asusrouter`'s WLAN category, but only export the
+radio-enabled state and numeric channel; SSIDs, passwords, and other configuration are
+not exposed. Non-numeric or automatic channel settings are omitted. Unavailable optional
+measurements are omitted. System-information memory values are converted from decimal MB
+to bytes; NVRAM is already reported in bytes.
 
 The exporter reports only aggregate AiMesh and port data. It does not expose client,
-node, MAC, IP, SSID, or other per-device labels. Wireless configuration categories are
-not scraped because they can contain credentials and other sensitive settings.
+node, MAC, IP, SSID, or other per-device labels. Although `asusrouter`'s WLAN response
+can include credentials and other sensitive settings, only the radio-enabled state and
+channel are exported.
 
 ## Quick Start
 
