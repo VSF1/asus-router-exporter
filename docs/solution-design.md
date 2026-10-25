@@ -4,6 +4,10 @@
 
 The exporter is a single Python process that polls an ASUS router's local HTTP API on a
 configurable interval and exposes the results as Prometheus metrics on `/metrics`.
+It follows the sensor surface of the [Home Assistant ASUSWRT integration](https://github.com/home-assistant/core/tree/dev/homeassistant/components/asuswrt),
+using the same `asusrouter` data categories for CPU, network, RAM, system information,
+temperatures, and boot time. Optional sensor families are omitted when the router does
+not support them.
 
 ## Design Decisions
 
@@ -29,16 +33,44 @@ client state for all nodes — polling only the main router is sufficient to get
 client counts. Individual node metrics (per-node CPU, RAM) are not available through the
 main router API and are not in scope.
 
+### Metrics and units
+
+Network counters and rates are read from `AsusData.NETWORK`. The router reports rates in
+bits per second, which the exporter converts to bytes per second to match the exported
+metric names. Cumulative WAN counters are exposed as Prometheus counters and adjusted
+for router-side counter resets. RAM values are reported in KiB by the router and
+converted to bytes. CPU per-core values, load averages, temperatures, uptime, and boot
+time are exposed when present. The system-information response also provides connection
+activity/capacity, WiFi client counts by band and association state, and memory details.
+Memory fields reported in decimal MB are converted to bytes; NVRAM is already in bytes.
+Swap values are exported by their router-provided slot without assigning used/total
+semantics that the response does not define.
+
+Additional optional collectors use the `AIMESH`, `PORTS`, `WAN`, `SPEEDTEST`, and `DSL`
+categories. AiMesh nodes and ports are aggregated without node, MAC, or IP labels.
+Port link speeds are summed by port type and converted from the library's Mbit/s values
+to bits/s. WAN metrics expose only recognized connection state. Speed-test metrics use
+the latest result already held by the router; the exporter does not initiate tests.
+The result timestamp is exported so consumers can distinguish a fresh result from an
+older one.
+DSL sync rates retain the raw numeric values from `asusrouter` because the library
+discards the original unit strings. The exporter deliberately does not scrape WLAN or
+guest-WLAN configuration or raw ping diagnostics: their responses may include sensitive
+settings or lack a stable normalized metric schema.
+
 ### Async-native
 
 `asusrouter` is an async library. The exporter uses `asyncio` throughout and fetches all
-metric categories concurrently within each scrape using `asyncio.gather`.
+metric categories concurrently within each scrape using `asyncio.gather`. Errors from
+optional categories are logged at debug level without marking the entire scrape failed;
+failures in the existing client, CPU, or RAM collection still mark the scrape failed.
 
 ### Connection lifecycle
 
-A single `async with AsusRouter(...)` context is held open across all scrape intervals.
-If the connection drops (router reboot, network blip), the outer `while True` loop catches
-the exception, sets `asus_scrape_success=0`, and reconnects after 60 seconds.
+The router is connected once and polled across scrape intervals, then disconnected when
+the loop exits or a connection failure occurs. If the connection drops (router reboot,
+network blip), the outer `while True` loop catches the exception, sets
+`asus_scrape_success=0`, disconnects, and retries after 60 seconds.
 
 ### Defensive attribute access
 

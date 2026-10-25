@@ -36,13 +36,37 @@ metrics, and ships a multi-arch Docker image via GitHub Actions.
 | `asus_scrape_success` | Gauge | 1 if last scrape succeeded, 0 on failure |
 | `asus_scrape_duration_seconds` | Gauge | Time taken to scrape the router |
 | `asus_clients_total` | Gauge | Total connected clients (wired + wireless) |
-| `asus_clients_by_band{band}` | Gauge | Wireless clients per band (2.4 GHz / 5 GHz / 6 GHz) |
+| `asus_clients_by_band{band}` | Gauge | Connected clients by WiFi band (2.4 GHz / 5 GHz / 6 GHz) or wired |
 | `asus_cpu_usage_percent` | Gauge | Router CPU usage percent |
+| `asus_cpu_core_usage_percent{core}` | Gauge | Router CPU usage per core |
 | `asus_ram_usage_percent` | Gauge | Router RAM usage percent |
 | `asus_ram_total_bytes` | Gauge | Total RAM in bytes |
 | `asus_ram_free_bytes` | Gauge | Free RAM in bytes |
-| `asus_wan_rx_rate_bytes_per_second` | Gauge | WAN receive rate |
-| `asus_wan_tx_rate_bytes_per_second` | Gauge | WAN transmit rate |
+| `asus_ram_used_bytes` | Gauge | Used RAM in bytes |
+| `asus_system_load_average{period}` | Gauge | 1-, 5-, and 15-minute system load averages |
+| `asus_temperature_celsius{sensor}` | Gauge | Router and radio temperatures where supported |
+| `asus_router_uptime_seconds` | Gauge | Time since the router booted |
+| `asus_router_boot_time_seconds` | Gauge | Unix timestamp of the router's last boot |
+| `asus_connections_active` | Gauge | Current active router connections |
+| `asus_connections_capacity` | Gauge | Total router connection-table capacity |
+| `asus_sysinfo_memory_bytes{field}` | Gauge | Additional system memory values, in bytes |
+| `asus_sysinfo_swap_megabytes{slot}` | Gauge | Router-reported swap values by slot |
+| `asus_wifi_clients_by_band{band,state}` | Gauge | WiFi clients by band and association state |
+| `asus_aimesh_nodes{state}` | Gauge | Aggregate online/offline AiMesh node counts |
+| `asus_ports_total{type}` | Gauge | Physical port count by type |
+| `asus_ports_up{type}` | Gauge | Active physical links by port type |
+| `asus_ports_link_speed_bits_per_second{type}` | Gauge | Sum of negotiated active port speeds by type |
+| `asus_wan_link_up{interface}` | Gauge | WAN and Internet link state |
+| `asus_speedtest_download_bits_per_second` | Gauge | Latest router-reported download bandwidth |
+| `asus_speedtest_upload_bits_per_second` | Gauge | Latest router-reported upload bandwidth |
+| `asus_speedtest_latency_milliseconds` | Gauge | Latest router-reported speed-test latency |
+| `asus_speedtest_jitter_milliseconds` | Gauge | Latest router-reported speed-test jitter |
+| `asus_speedtest_last_run_timestamp_seconds` | Gauge | Timestamp of the latest router-reported speed test |
+| `asus_dsl_sync_rate{direction}` | Gauge | Raw DSL sync-rate value (unit not exposed by asusrouter) |
+| `asus_wan_rx_rate_bytes_per_second` | Gauge | WAN receive rate in bytes per second |
+| `asus_wan_tx_rate_bytes_per_second` | Gauge | WAN transmit rate in bytes per second |
+| `asus_wan_rx_bytes_total` | Counter | Total WAN bytes received |
+| `asus_wan_tx_bytes_total` | Counter | Total WAN bytes transmitted |
 
 ### Environment Variables
 
